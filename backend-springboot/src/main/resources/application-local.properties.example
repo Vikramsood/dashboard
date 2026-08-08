@@ -1,0 +1,2 @@
+# Set these environment variables before starting Maven; do not commit real credentials.
+# PowerShell: $env:DB_USERNAME='postgres'; $env:DB_PASSWORD='your-password'; mvn spring-boot:run
