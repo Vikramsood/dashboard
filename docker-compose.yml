@@ -1,0 +1,42 @@
+services:
+  aeroops-db:
+    image: postgres:16-alpine
+    container_name: aeroops-db
+    environment:
+      POSTGRES_DB: aeroops_dashboard
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+    ports:
+      - "5432:5432"
+    volumes:
+      - aeroops-db-data:/var/lib/postgresql/data
+      - ./database/01_create_schema_and_seed.sql:/docker-entrypoint-initdb.d/01_create_schema_and_seed.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d aeroops_dashboard"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  aeroops-backend:
+    build: ./backend-springboot
+    container_name: aeroops-backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://aeroops-db:5432/aeroops_dashboard
+      DB_USERNAME: postgres
+      DB_PASSWORD: root
+    ports:
+      - "8081:8081"
+    depends_on:
+      aeroops-db:
+        condition: service_healthy
+
+  aeroops-frontend:
+    build: ./frontend-angular
+    container_name: aeroops-frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - aeroops-backend
+
+volumes:
+  aeroops-db-data:
