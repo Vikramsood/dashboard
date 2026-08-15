@@ -46,11 +46,11 @@ spec:
               protocol: TCP
           env:
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:postgresql://dashboard-db.cveg02gektf7.ap-south-1.rds.amazonaws.com:5432/aeroops_dashboard"
+              value: "jdbc:postgresql://aeroops-db:5432/aeroops_dashboard"
             - name: DB_USERNAME
               value: "postgres"
             - name: DB_PASSWORD
-              value: "changeme123!"
+              value: "root"
           {{- with .Values.livenessProbe }}
           livenessProbe:
             {{- toYaml . | nindent 12 }}
