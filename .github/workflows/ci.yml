@@ -42,3 +42,12 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=aeroops-dashboard
+
+      - name: Build Docker image
+        run: docker build -t aeroops-backend:${{ github.sha }} .
+
+      - name: Trivy full report (non-blocking)
+        run: trivy image --severity LOW,MEDIUM,HIGH,CRITICAL --exit-code 0 --format table aeroops-backend:${{ github.sha }}
+
+      - name: Trivy critical gate (blocking)
+        run: trivy image --severity CRITICAL --exit-code 1 --format table aeroops-backend:${{ github.sha }}
